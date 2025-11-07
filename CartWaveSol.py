@@ -12,7 +12,6 @@ class CartWaveSol:
                  x, 
                  y, 
                  bathymetry,
-                 vegetation,
                  x0, 
                  y0, 
                  E0, 
@@ -93,15 +92,8 @@ class CartWaveSol:
         # initial amplitude
         d_init = self.bathymetry_interpolate((self.x0, self.y0))
         self.a0 = np.sqrt(2 * self.E0) / self.dispersion(self.init_k[0], self.init_k[1], d_init)
-
         
-        # self.x_interpolate = RGI((x, y), self.x.T)
-        # self.y_interpolate = RGI((x, y), self.y.T)
-
-        
-
         # empty arrays for later
-        # wave vector change over time
         self.ks = np.zeros(len(self.ts))
         self.ls = np.zeros(len(self.ts))
         self.ray_xs = np.zeros(len(self.ts))
@@ -321,25 +313,17 @@ class CartWaveSol:
             E_prev * (diff_x_cgx_prev + diff_y_cgy_prev)
         )
         return xnew, ynew, knew, lnew, Enew
-
-
     
     def cg(self, k, l, d):
         '''
         Computes the group velocity
         '''
-        # const = np.sqrt((self.g * d) / (k **2 + l ** 2)) 
-        # k_mag = np.sqrt(k**2 + l**2)
-        # sigma = dispersion(k, l, d)
-        # cg_k = 1/((2 * sigma)) * (self.g* k * (np.tanh(k_mag * d)) / k_mag + self.g * (1/np.cosh(k_mag * d)) ** 2 * k * d)
-        # cg_l = 1/((2 * sigma)) * (self.g* l * (np.tanh(k_mag * d)) / k_mag + self.g * (1/np.cosh(k_mag * d)) ** 2 * l * d) 
         dk = 1e-6 * k if k != 0 else 1e-6
         dl = 1e-6 * l if l!= 0 else 1e-6
         sigma_k = (self.dispersion(k + dk, l, d) - self.dispersion(k - dk, l, d)) / (2 * dk)
         sigma_l = (self.dispersion(k, l + dl, d) - self.dispersion(k, l - dl, d)) / (2 * dl)
         return np.array([sigma_k, sigma_l])
-        # return np.array([cg_k, cg_l])
-    
+
     def bounds_check(self, x, y):
         if x < self.x_min or x > self.x_max or y < self.y_min or y > self.y_max:
             warn("The wavefront has moved out of the domain.")
@@ -365,6 +349,7 @@ class CartWaveSol:
                 'A': self.amps
             })
             return True
+        return False
 
 
 
