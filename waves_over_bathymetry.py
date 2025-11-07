@@ -8,8 +8,8 @@ sns.set_style('white')
 # %matplotlib widget
 
 #%% set up bathymetry
-x = np.linspace(-100, 100, 1000)
-y = np.linspace(-100, 100, 1000)
+x = np.linspace(-100, 100, 1000, endpoint=True)
+y = np.linspace(-100, 100, 1000, endpoint=True)
 xx, yy = np.meshgrid(x, y)
 
 def shoal(x, start, stop, initial_depth, final_depth):
@@ -25,33 +25,39 @@ def gaussian_ridge(xx, yy, mean_x, mean_y, sigma_x, sigma_y, mean_depth, ridge_h
 
 # bathymetry = shoal(xx, 0, 30, 20, 0)
 bathymetry = gaussian_ridge(xx, yy, 0, 0, 30, 30, 5, 3)
+dt = 1
+T = 100
+E0 = 1
+k0 = (0.1, 0)
 
 wave_sol = CartWaveSol(
-    init_k=(1, 0),
+    init_k=k0,
     x = x,
     y = y,
     bathymetry = bathymetry,
     x0 = -75,
     y0 = 20,
-    E0 = 1,
-    T = 100,
-    dt=0.1,
-    vegetation=None
+    E0 = E0,
+    T = T,
+    dt=dt,
+    vegetation=None,
+    method='euler'
 )
 
 wave_sol.solve()
 
 wave_sol2 = CartWaveSol(
-    init_k=(1, 0),
+    init_k=k0,
     x = x,
     y = y,
     bathymetry = bathymetry,
     x0 = -75,
     y0 = -20,
-    E0 = 1,
-    T = 100,
-    dt=0.1,
-    vegetation=None
+    E0 = E0,
+    T = T,
+    dt=dt,
+    vegetation=None,
+    method='adams-bashforth'
 )
 
 wave_sol2.solve()
@@ -87,6 +93,6 @@ ax.xaxis.set_tick_params(direction='in')
 ax.yaxis.set_tick_params(direction='in')
 # ax.set_xlim(25, 50)
 # ax.set_ylim(-10, 10)
-plt.savefig(r'./figures/wave_over_shoal_center.png', dpi=300)
+# plt.savefig(r'./figures/wave_over_shoal_center.png', dpi=300)
 plt.show()
 # %%
