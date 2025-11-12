@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from CartWaveSol import CartWaveSol
-from WavePlot import WavePlot
+from classes.CartWaveSol import CartWaveSol
+from classes.WavePlot import WavePlot
 from matplotlib.patches import FancyArrowPatch
 # %matplotlib widget
 

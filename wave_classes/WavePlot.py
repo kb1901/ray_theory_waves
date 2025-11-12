@@ -1,4 +1,4 @@
-from CartWaveSol import CartWaveSol
+from wave_classes.CartWaveSol import CartWaveSol
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 import seaborn as sns
