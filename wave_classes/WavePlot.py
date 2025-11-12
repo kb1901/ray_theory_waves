@@ -21,7 +21,16 @@ class WavePlot:
         self.ax = ax
         self.fig = fig
     
-    def plot_wave_traj(self, xx, yy, bathymetry, color, label=None, save_to=None):
+    def plot_wave_traj(
+            self, 
+            xx, 
+            yy, 
+            bathymetry, 
+            color,
+            arrow: bool=True,
+            label=None, 
+            save_to=None
+            ):
         '''
         Plots the wave trajectories in the object passed
         '''
@@ -35,7 +44,8 @@ class WavePlot:
         for sol in self.cart_wave_sol:
             df = sol.df
             s1 = df['A'].to_numpy()/max_amp
-            self.arrow(df['x'], df['y'], self.ax, 5)
+            if arrow:
+                self.arrow(df['x'], df['y'], self.ax, 5)
             self.ax.scatter(df['x'], df['y'], c=color, label=label, edgecolors='black', s=self.map_range(s1, 10, 80))
             self.ax.legend(loc='upper right')
             self.ax.xaxis.set_tick_params(direction='in')

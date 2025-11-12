@@ -35,24 +35,22 @@ def gaussian_ridge_perturbed(
         )
     ))
     return bath
-
 # bathymetry = shoal(xx, 0, 30, 20, 0)
-bathymetry = gaussian_ridge_perturbed(0.5, xx, yy, 0, 0, 200, 200, 20, 10)
-dt = 1
-T = 200
+bathymetry = gaussian_ridge_perturbed(0.5, xx, yy, 0, 0, 300, 300, 20, 10)
+dt = -1
+T = -200
 E0 = 1e-4
-k0 = (1e-3, 0)
-y0s = np.arange(-500, 501, 100)
+k0s = [(0, 1), (0.25, 0.75), (0.3, 0.6), (0.5, 0.5), (0.6, 0.3), (0.75, 0.25), (0, 1)]
 sols = []
 
-for y0 in y0s:
+for k0 in k0s:
     wave_sol = CartWaveSol(
         init_k=k0,
         x = x,
         y = y,
         bathymetry = bathymetry,
-        x0 = -750,
-        y0 = y0,
+        x0 = 750,
+        y0 = 750,
         E0 = E0,
         T = T,
         dt=dt,
@@ -61,9 +59,10 @@ for y0 in y0s:
 
     wave_sol.solve()
     sols.append(wave_sol)
+
 #%% plotting
 fig, ax = fig, ax = plt.subplots(dpi=150, figsize=(10,7))
-w1 = WavePlot(fig, ax, sols)
-w1.plot_wave_traj(xx, yy, bathymetry, color='aqua')
+for sol in sols:
+    wplot = WavePlot(fig, ax, sols)
+    wplot.plot_wave_traj(xx, yy, bathymetry, color='aqua', arrow=False)
 plt.show()
-# %%
