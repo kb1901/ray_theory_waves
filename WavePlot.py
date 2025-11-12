@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 import seaborn as sns
 import numpy as np
+import pandas as pd
 sns.set_style('white')
 
 class WavePlot:
@@ -11,9 +12,12 @@ class WavePlot:
             self,
             fig,
             ax,
-            cart_wave_sol: CartWaveSol
+            cart_wave_sol: CartWaveSol | list[CartWaveSol]
     ):
-        self.cart_wave_sol = cart_wave_sol
+        if type(cart_wave_sol) != list:
+            self.cart_wave_sol = [cart_wave_sol]
+        else:    
+            self.cart_wave_sol = cart_wave_sol
         self.ax = ax
         self.fig = fig
     
@@ -24,15 +28,26 @@ class WavePlot:
         if not self.ax.has_data():
             im = self.ax.pcolormesh(xx, yy, bathymetry, cmap='Reds')
             self.fig.colorbar(im, label='Bathmetry (m)')
-        df = self.cart_wave_sol.df
-        s1 = df['A'].to_numpy()/np.max(df['A'].to_numpy())
-        self.arrow(df['x'], df['y'], self.ax, 5)
-        self.ax.scatter(df['x'], df['y'], c=color, label=label, edgecolors='black', s=self.map_range(s1, 10, 80))
-        self.ax.legend(loc='upper right')
-        self.ax.xaxis.set_tick_params(direction='in')
-        self.ax.yaxis.set_tick_params(direction='in')
+        max_amps = []
+        for sol in self.cart_wave_sol:
+            max_amps.append(np.max(sol.df['A']))
+        max_amp = np.max(max_amps)
+        for sol in self.cart_wave_sol:
+            df = sol.df
+            s1 = df['A'].to_numpy()/max_amp
+            self.arrow(df['x'], df['y'], self.ax, 5)
+            self.ax.scatter(df['x'], df['y'], c=color, label=label, edgecolors='black', s=self.map_range(s1, 10, 80))
+            self.ax.legend(loc='upper right')
+            self.ax.xaxis.set_tick_params(direction='in')
+            self.ax.yaxis.set_tick_params(direction='in')
         if save_to:
             plt.savefig(save_to)
+        return None
+    
+    def plot_bath(self, xx, yy, bathymetry):
+        if not self.ax.has_data():
+            im = self.ax.pcolormesh(xx, yy, bathymetry, cmap='Reds')
+            self.fig.colorbar(im, label='Bathmetry (m)')
         return None
     
     # helpers
